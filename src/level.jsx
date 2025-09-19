@@ -90,13 +90,13 @@ export function BlockStart({ position = [0, 0, 0] }) {
         <Text
           font="/bebas-neue-v9-latin-regular.woff"
           scale={0.2}
-          textAlign="right"
+          textAlign="center"
           lineHeight={0.75}
           maxWidth={0.25}
           rotation-y={-0.25}
           position={[0, 1, 0]}
         >
-          Marble Race
+          Roll On
           <meshBasicMaterial toneMapped={false} />
         </Text>
       </Float>
