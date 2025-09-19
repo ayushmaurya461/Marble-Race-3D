@@ -6,7 +6,6 @@ import * as THREE from "three";
 import useGame from "./store/useGame";
 
 export const Player = forwardRef((_, body) => {
-  // const body = useRef();
   const [subscribeKeys, getKeys] = useKeyboardControls();
   const [smoothCameraPosition] = useState(() => new THREE.Vector3(10, 10, 10));
   const [smoothCameraTarget] = useState(() => new THREE.Vector3());
@@ -14,9 +13,6 @@ export const Player = forwardRef((_, body) => {
   const rapierWorld = world.raw();
   const start = useGame((state) => state.start);
   const end = useGame((state) => state.end);
-  // const restart = useGame((state) => state.restart);
-  // const phase = useGame((state) => state.phase);
-  // const blocksCount = useGame((state) => state.blocksCount);
 
   const jump = () => {
     const origin = body.current?.translation();

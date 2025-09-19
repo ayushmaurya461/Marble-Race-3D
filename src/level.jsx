@@ -1,7 +1,7 @@
 import { Float, Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody, CuboidCollider } from "@react-three/rapier";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 THREE.ColorManagement.legacyMode = false;
@@ -9,12 +9,23 @@ THREE.ColorManagement.legacyMode = false;
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 const floorMaterial = new THREE.MeshStandardMaterial({ color: "#6ab90e" });
 const floor2Material = new THREE.MeshStandardMaterial({ color: "#fbff00" });
-const obstacleMaterial = new THREE.MeshStandardMaterial({ color: "#ff0000" });
-const wallMaterial = new THREE.MeshStandardMaterial({ color: "grey" });
+const axeMaterial = new THREE.MeshStandardMaterial({ color: "#701368" });
+const crusherMaterial = new THREE.MeshStandardMaterial({ color: "#b90606" });
+const pusherMaterial = new THREE.MeshStandardMaterial({ color: "#ffbb00" });
+const pendulumMaterial = new THREE.MeshStandardMaterial({ color: "#006eff" });
+const limboMaterial = new THREE.MeshStandardMaterial({ color: "#006eff" });
+const spinnerMaterial = new THREE.MeshStandardMaterial({ color: "#006eff" });
 
 export function Level({
   count = 15,
-  types = [BlockSpinner, BlockLimbo, BlockAxe],
+  types = [
+    BlockSpinner,
+    BlockLimbo,
+    BlockAxe,
+    BlockCrusher,
+    BlockPendulum,
+    BlockPusher,
+  ],
   seed = 0,
   playerRef,
 }) {
@@ -78,12 +89,12 @@ export function BlockStart({ position = [0, 0, 0] }) {
       <Float>
         <Text
           font="/bebas-neue-v9-latin-regular.woff"
-          scale={0.3}
+          scale={0.2}
           textAlign="right"
           lineHeight={0.75}
           maxWidth={0.25}
           rotation-y={-0.25}
-          position={[1, 0.65, 0]}
+          position={[0, 1, 0]}
         >
           Marble Race
           <meshBasicMaterial toneMapped={false} />
@@ -158,7 +169,7 @@ export function BlockSpinner({ position = [0, 0, 0] }) {
         restitution={0.2}
       >
         <mesh
-          material={obstacleMaterial}
+          material={spinnerMaterial}
           geometry={boxGeometry}
           scale={[3.5, 0.3, 0.3]}
           castShadow
@@ -201,7 +212,7 @@ export function BlockLimbo({ position = [0, 0, 0] }) {
         restitution={0.2}
       >
         <mesh
-          material={obstacleMaterial}
+          material={limboMaterial}
           geometry={boxGeometry}
           scale={[3.5, 0.3, 0.3]}
           castShadow
@@ -244,9 +255,116 @@ function BlockAxe({ position = [0, 0, 0] }) {
         restitution={0.2}
       >
         <mesh
-          material={obstacleMaterial}
+          material={axeMaterial}
           geometry={boxGeometry}
           scale={[1.5, 1.5, 0.3]}
+          castShadow
+          receiveShadow
+        />
+      </RigidBody>
+    </group>
+  );
+}
+
+function BlockPendulum({ position = [0, 0, 0] }) {
+  const obstacle = useRef();
+  const [speed] = useState(() => Math.random() + 0.5);
+
+  useFrame((state) => {
+    const elapsedTime = state.clock.getElapsedTime();
+    obstacle.current.setNextKinematicTranslation({
+      x: position[0] + Math.sin(elapsedTime * speed) * 1.5,
+      y: position[1] + 1,
+      z: position[2],
+    });
+  });
+
+  return (
+    <group position={position}>
+      <mesh
+        position={[0, -0.1, 0]}
+        receiveShadow
+        material={floor2Material}
+        geometry={boxGeometry}
+        scale={[4, 0.2, 4]}
+      />
+      <RigidBody ref={obstacle} type="kinematicPosition" restitution={0.2}>
+        <mesh
+          material={pendulumMaterial}
+          geometry={boxGeometry}
+          scale={[0.5, 2, 0.5]}
+          castShadow
+          receiveShadow
+        />
+      </RigidBody>
+    </group>
+  );
+}
+
+function BlockCrusher({ position = [0, 0, 0] }) {
+  const obstacle = useRef();
+  const [speed] = useState(() => Math.random() + 0.8);
+
+  useFrame((state) => {
+    const elapsedTime = state.clock.getElapsedTime();
+    const y = Math.abs(Math.sin(elapsedTime * speed)) * 2 + 0.5; // goes up & down
+    obstacle.current.setNextKinematicTranslation({
+      x: position[0],
+      y,
+      z: position[2],
+    });
+  });
+
+  return (
+    <group position={position}>
+      <mesh
+        position={[0, -0.1, 0]}
+        receiveShadow
+        material={floor2Material}
+        geometry={boxGeometry}
+        scale={[4, 0.2, 4]}
+      />
+      <RigidBody ref={obstacle} type="kinematicPosition" restitution={0.2}>
+        <mesh
+          material={crusherMaterial}
+          geometry={boxGeometry}
+          scale={[2, 0.5, 2]}
+          castShadow
+          receiveShadow
+        />
+      </RigidBody>
+    </group>
+  );
+}
+
+function BlockPusher({ position = [0, 0, 0] }) {
+  const obstacle = useRef();
+  const [speed] = useState(() => Math.random() + 1);
+
+  useFrame((state) => {
+    const elapsedTime = state.clock.getElapsedTime();
+    const x = Math.sin(elapsedTime * speed) * 1.5; // side-to-side
+    obstacle.current.setNextKinematicTranslation({
+      x: position[0] + x,
+      y: position[1] + 0.8,
+      z: position[2],
+    });
+  });
+
+  return (
+    <group position={position}>
+      <mesh
+        position={[0, -0.1, 0]}
+        receiveShadow
+        material={floor2Material}
+        geometry={boxGeometry}
+        scale={[4, 0.2, 4]}
+      />
+      <RigidBody ref={obstacle} type="kinematicPosition" restitution={0.2}>
+        <mesh
+          material={pusherMaterial}
+          geometry={boxGeometry}
+          scale={[0.5, 1, 3]}
           castShadow
           receiveShadow
         />

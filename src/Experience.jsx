@@ -3,12 +3,10 @@ import { Level } from "./level.jsx";
 import { Physics } from "@react-three/rapier";
 import { Player } from "./Player.jsx";
 import useGame from "./store/useGame.js";
-import { useRef } from "react";
 
-export default function Experience() {
+export default function Experience({ playerRef }) {
   const blocksCount = useGame((state) => state.blocksCount);
   const blockSeed = useGame((state) => state.blockSeed);
-  const playerRef = useRef();
 
   return (
     <>

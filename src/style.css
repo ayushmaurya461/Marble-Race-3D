@@ -22,7 +22,7 @@ body,
   font-style: normal;
 }
 
-.time {
+/* .time {
   position: absolute;
   top: 15%;
   left: 0;
@@ -31,6 +31,20 @@ body,
   width: 100%;
   background-color: rgba(0, 0, 0, 0.329);
   color: #fafafa !important;
+} */
+
+.score {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  font-size: 2rem;
+  color: #fafafa;
+
+  .current-score,
+  .high-score {
+    border: 4px solid #fff;
+    padding: 0.5rem 1rem;
+  }
 }
 
 .restart {
@@ -55,6 +69,7 @@ body,
 
 .controls {
   position: absolute;
+  pointer-events: all;
   bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
@@ -63,7 +78,7 @@ body,
   border-radius: 10px;
   color: #fafafa !important;
 
-  .raw {
+  .row {
     display: flex;
     gap: 20px;
     margin-top: 20px;
